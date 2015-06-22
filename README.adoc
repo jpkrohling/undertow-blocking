@@ -1,0 +1,22 @@
+= Undertow Blocking
+
+Sample project that demonstrates the following scenario:
+
+- /accounts receives a request
+- the HttpHandler bundled as library on /accounts makes a request to /auth
+- this request blocks, and no request is "received" on the /auth side
+- once the request times out, the /auth side "receives" the request
+
+"Receives" and "received" is defined here as: the /auth side doesn't processes incoming requests, as if the HttpHandler
+were "blocking" the incoming requests.
+
+How to reproduce:
+
+- put a breakpoint on library/AgentHttpHandler, on the following line:
+
+    statusCode = connection.getResponseCode(); // blocks here, and throws a read timeout exception
+
+- run
+
+    $ curl -v http://localhost:8080/hawkular-undertow-accounts/v1/accounts
+
